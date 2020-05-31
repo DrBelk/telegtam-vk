@@ -1,22 +1,40 @@
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
-from bot_privacy import API_TOKEN
+from error_codes import *
+from vk_handler import vk_handler
 
-updater = Updater(token=API_TOKEN, use_context=True)
-dispatcher = updater.dispatcher
+try:
+    from bot_privacy import API_TOKEN
+except:
+    print ('got real variables')
+    from bot_privacy_real import API_TOKEN
+    
 
-def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
+class telegram_bot:
+    # Telegram bot's functions
+    def start(self, update, context):
+        context.bot.send_message(chat_id=update.effective_chat.id, 
+                                 text="I'm a bot, please talk to me!")
 
-def set_vk_user_handler(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Setting up the main user, please type VK login")
+    def set_vk_user_handler(self, update, context):
+        context.bot.send_message(chat_id=update.effective_chat.id, 
+                                 text="Setting up the main user, please type VK login")
 
-start_handler = CommandHandler('start', start)
-set_vk_user_handler = CommandHandler('set_vk_user', set_vk_user_handler)
+    def start(self):
+        updater = Updater(token=API_TOKEN, use_context=True)
+        dispatcher = updater.dispatcher
 
-dispatcher.add_handler(start_handler)
-dispatcher.add_handler(set_vk_user_handler)
+        start_handler = CommandHandler('start', self.start)
+        dispatcher.add_handler(start_handler)
+
+        set_vk_user_handler = CommandHandler('set_vk_user', self.set_vk_user_handler)
+        dispatcher.add_handler(set_vk_user_handler)
+
+        updater.start_polling()
+        
+        print('Bot is working')
 
 
-updater.start_polling()
-
+bot = telegram_bot()
+bot.start()
+                 
